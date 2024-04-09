@@ -1,0 +1,72 @@
+.authType {
+	display: grid;
+
+	width: 100%;
+	margin-bottom: 20px;
+	grid-template-columns: auto auto;
+	justify-items: center;
+	gap: 20px;
+}
+
+.typeChangeBtn {
+	display: grid;
+
+	width: 100%;
+	padding: 2px 0;
+
+	cursor: pointer;
+	transition-duration: 300ms;
+
+	border-radius: 10px;
+	background: var(--lighter);
+	justify-items: center;
+}
+
+.active {
+	filter: brightness(0.97);
+}
+
+.typeChangeBtn:active {
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+	filter: brightness(0.97);
+}
+
+.typeChangeText {
+	user-select: none;
+	transition-duration: 300ms;
+
+	color: var(--light);
+
+	font-weight: 700;
+}
+
+.activeText {
+	color: var(--primary);
+}
+
+.typeChangeBtn:active > .typeChangeText {
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+	color: var(--primary);
+}
+
+@media (min-width: 1024px) {
+	.typeChangeBtn:hover {
+		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+		filter: brightness(0.97);
+	}
+
+	.typeChangeBtn:hover > .typeChangeText {
+		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+		color: var(--primary);
+	}
+}
+
+@media (max-width: 580px) {
+	.authType {
+		gap: 10px;
+	}
+}

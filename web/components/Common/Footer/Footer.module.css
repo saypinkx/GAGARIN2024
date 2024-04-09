@@ -1,0 +1,25 @@
+.footer {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+
+	display: grid;
+
+	width: 100%;
+	height: fit-content;
+	padding-bottom: 20px;
+	justify-items: center;
+	gap: 20px;
+}
+
+.divider {
+	width: 90%;
+	height: 1px;
+
+	background: var(--lighter);
+	filter: brightness(0.95);
+}
+
+.footerText {
+	color: var(--light);
+}

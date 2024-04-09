@@ -1,0 +1,24 @@
+.header {
+	position: absolute;
+	top: 0;
+	right: 0;
+
+	display: grid;
+
+	width: 100%;
+	height: fit-content;
+	padding: 20px 60px;
+	justify-items: right;
+}
+
+@media (max-width: 1024px) {
+	.header {
+		padding: 10px 30px;
+	}
+}
+
+@media (max-width: 580px) {
+	.header {
+		padding: 5px 20px;
+	}
+}

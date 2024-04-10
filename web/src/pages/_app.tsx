@@ -4,13 +4,17 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { setLocale } from '../../helpers/locale.helper';
+import { Provider } from 'react-redux';
+import { wrapper } from '../../features/store/store';
 
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
+
+  const { store } = wrapper.useWrappedStore(pageProps);
   
   return (
-    <>
+    <Provider store={store}>
       <Head>
         <title>{setLocale(router.locale).gagarin_hack}</title>
         <meta name='description' content={setLocale(router.locale).gagarin_hack} />
@@ -20,6 +24,6 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/vercel.svg" type='image/svg+xml' />
       </Head>
       <Component {...pageProps} />
-    </>
+    </Provider>
   );
 }

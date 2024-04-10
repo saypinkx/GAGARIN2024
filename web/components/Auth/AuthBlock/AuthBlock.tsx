@@ -20,13 +20,11 @@ export const AuthBlock = (): JSX.Element => {
     
 
     const [username, setUsername] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
 
     const errType: CheckAuthInterface = {
 		errUsername: false,
-		errEmail: false,
 		errPassword: false,
 		errConfirmPassword: false,
 	};
@@ -38,9 +36,9 @@ export const AuthBlock = (): JSX.Element => {
         return (
             <div className={styles.authBlock}>
                 <AuthType type={type} setType={setType} />
-                <Input type='email' text={setLocale(router.locale).email}
-                    value={email} error={error.errEmail} eye={false}
-                    onChange={(e) => setEmail(e.target.value)} />
+                <Input type='text' text={setLocale(router.locale).username}
+                    value={username} error={error.errUsername} eye={false}
+                    onChange={(e) => setUsername(e.target.value)} />
                 <InputWithEye onMouseEnter={() => setPswdType('text')}
                     onMouseLeave={() => setPswdType('password')}>
                     <Input type={pswdType} text={setLocale(router.locale).password}
@@ -49,9 +47,10 @@ export const AuthBlock = (): JSX.Element => {
                 </InputWithEye>
                 <AuthButton loading={loading} text={setLocale(router.locale).login}
                     onClick={() => checkAuth({
-                        email: email,
+
+                        username: username,
                         password: password,
-                    }, router.locale, setError, type, setLoading)} />
+                    }, router, setError, type, setLoading)} />
             </div>
         );
     } else {
@@ -61,9 +60,6 @@ export const AuthBlock = (): JSX.Element => {
                 <Input type='text' text={setLocale(router.locale).username}
                     value={username} error={error.errUsername} eye={false}
                     onChange={(e) => setUsername(e.target.value)} />
-                <Input type='email' text={setLocale(router.locale).email}
-                    value={email} error={error.errEmail} eye={false}
-                    onChange={(e) => setEmail(e.target.value)} />
                 <InputWithEye onMouseEnter={() => setPswdType('text')}
                     onMouseLeave={() => setPswdType('password')}>
                     <Input type={pswdType} text={setLocale(router.locale).password}
@@ -79,10 +75,9 @@ export const AuthBlock = (): JSX.Element => {
                 <AuthButton loading={loading} text={setLocale(router.locale).register}
                     onClick={() => checkAuth({
                         username: username,
-                        email: email,
                         password: password,
                         confirmPassword: confirmPassword,
-                    }, router.locale, setError, type, setLoading)} />
+                    }, router, setError, type, setLoading)} />
             </div>
         );
     }

@@ -1,34 +1,50 @@
-import { setLocale } from "./locale.helper";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { hashPassword } from "./hash.helper";
-import { User } from "../interfaces/user.interface";
 import { AuthDataInterface } from "../interfaces/check_auth_interface";
-import { ToastError, ToastSuccess } from "../components/Common/Toast/Toast";
 
 
-export async function loginUser(data: AuthDataInterface, router: any) {
-    const { data: response }: AxiosResponse<User[]> = await axios.get(process.env.NEXT_PUBLIC_DOMAIN +
-        '/get_user?type=email&information=' + data.email);
+export async function loginUser(data: AuthDataInterface): Promise<boolean> {
+    let res : boolean = false;
 
-    ToastSuccess(setLocale(router.locale).cool + '!');
-    localStorage.setItem('logged_in', 'true');
-    localStorage.setItem('username', response[0].username);
-    router.push('/content');
+    await axios.post(process.env.NEXT_PUBLIC_DOMAIN + '/api/users/login', {
+        login: data.username,
+        password: hashPassword(data.password)
+    })
+        .then(function () {                
+            res = true;
+        })
+        .catch(function (error) {
+            console.log("Login error: " + error);
+    
+            res = false;
+        });
+    
+    return res;
 }
 
-export async function registerUser(data: AuthDataInterface, router: any) {
-    await axios.post(process.env.NEXT_PUBLIC_DOMAIN + '/register', {
-        username: data.username,
-        email: data.email,
+export async function registerUser(data: AuthDataInterface): Promise<boolean> {
+    let res : boolean = false;
+
+    await axios.post(process.env.NEXT_PUBLIC_DOMAIN + '/api/users', {
+        login: data.username,
         password: hashPassword(data.password),
+        parameters: {}
     })
-        .then(function () {
-            ToastSuccess(setLocale(router.locale).cool + '!');
-            localStorage.setItem('logged_in', 'true');
-            router.push('/content');
+        .then(function () {           
+            res = true;
         })
         .catch(function (error) {
             console.log("Registration error: " + error);
-            ToastError(String(error));
+
+            res = false;
+        });
+    
+    return res;
+}
+
+export async function deleteUser(username: string) {
+    await axios.delete(process.env.NEXT_PUBLIC_DOMAIN + '/api/users/' + username)
+        .catch(function (error) {
+            console.log("Deleting error: " + error);
         });
 }

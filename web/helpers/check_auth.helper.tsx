@@ -3,129 +3,109 @@ import axios, { AxiosResponse } from 'axios';
 import { hashPassword } from "./hash.helper";
 import { AuthDataInterface, CheckAuthInterface } from "../interfaces/check_auth_interface";
 import { ToastError, ToastSuccess } from "../components/Common/Toast/Toast";
+import { loginUser, registerUser } from "./auth.helper";
 
 
-const EMAIL_REGEXP = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu;
-
-export async function checkAuth(data: AuthDataInterface, locale: string | undefined, setError: (e: any) => void,
+export async function checkAuth(data: AuthDataInterface, router: any, setError: (e: any) => void,
     type: 'login' | 'registration', setLoading: (e: any) => void) {
     let isOk: boolean = false;
     setLoading(true);
 
     if (type === 'login') {
-        isOk = await checkLogin(data, locale, setError, setLoading);
+        isOk = await checkLogin(data, router, setError, setLoading);
     } else if (type === 'registration') {
-        isOk = await checkRegistration(data, locale, setError, setLoading);
+        isOk = await checkRegistration(data, router, setError, setLoading);
     }
 }
 
-export async function checkLogin(loginData: AuthDataInterface, locale: string | undefined,
+export async function checkLogin(loginData: AuthDataInterface, router: any,
     setError: (e: any) => void, setLoading: (e: any) => void): Promise<boolean> {
     const checkLogin: CheckAuthInterface = {
-        errEmail: false,
+        errUsername: false,
         errPassword: false,
     };
 
     setError(checkLogin);
 
-    if (EMAIL_REGEXP.test(loginData.email) && loginData.password.length >= 8 && loginData.password.length <= 32) {
-        // const { data: response }: AxiosResponse<LoginResponseInterface> = await axios.get(process.env.NEXT_PUBLIC_DOMAIN +
-        //     '/login?password=' + loginData.password + '&email=' + loginData.email);
+    if (loginData.username?.length && loginData.username?.length >= 3
+        &&loginData.password.length >= 8 && loginData.password.length <= 32) {
+            if (!await loginUser(loginData)) {
+                checkLogin.errUsername = true;
+                checkLogin.errPassword = true;
 
-        // if (response.message === 'Choose correct username/password/password') {
-        //     checkLogin.errPassword = true;
-        //     { ToastError(setLocale(locale).password_does_not_match); }
-
-        //     setLoading(false);
-        //     return false;
-        // } else {
-        //     setLoading(false);
-        //     return true;
-        // }
-
-        setTimeout(() => {
+                ToastError(setLocale(router.locale).incorrect_data);
+                setLoading(false);
+    
+                return false;
+            }
+    
+            ToastSuccess(setLocale(router.locale).cool + '!');
             setLoading(false);
-            { ToastSuccess(setLocale(locale).cool); }
-        }, 2000);
-
-        return true;
+            
+            localStorage.setItem('logged_in', loginData.username);
+            router.push('/home');
+    
+            return true;
     } else {
-        if (!EMAIL_REGEXP.test(loginData.email)) {
-            checkLogin.errEmail = true;
-            { ToastError(setLocale(locale).error_email); }
+        if (!loginData.username || loginData.username && loginData.username?.length < 3) {
+            checkLogin.errUsername = true;
+            { ToastError(setLocale(router.locale).error_username); }
         }
+
         if (loginData.password.length < 8 || loginData.password.length > 32) {
             checkLogin.errPassword = true;
-            { ToastError(setLocale(locale).error_password); }
+            { ToastError(setLocale(router.locale).error_password); }
         }
 
         setLoading(false);
+
         return false;
     }
 }
 
-export async function checkRegistration(registrationData: AuthDataInterface, locale: string | undefined,
+export async function checkRegistration(registrationData: AuthDataInterface, router: any,
     setError: (e: any) => void, setLoading: (e: any) => void): Promise<boolean> {
     const checkRegistration: CheckAuthInterface = {
         errUsername: false,
-        errEmail: false,
         errPassword: false,
         errConfirmPassword: false,
     };
 
     setError(checkRegistration);
 
-    if (EMAIL_REGEXP.test(registrationData.email) && registrationData.password.length >= 8
-        && registrationData.password.length <= 32 && registrationData.password === registrationData.confirmPassword
+    if (registrationData.password.length >= 8 && registrationData.password.length <= 32
+        && registrationData.password === registrationData.confirmPassword
         && registrationData.username?.length && registrationData.username?.length >= 3) {
-        // const { data: userByUsername }: AxiosResponse<User[]> = await axios.get(process.env.NEXT_PUBLIC_DOMAIN +
-        //     '/get_user?type=username&information=' + registrationData.username);
+        if (!await registerUser(registrationData)) {
+            checkRegistration.errUsername = true;
 
-        // const { data: userByEmail }: AxiosResponse<User[]> = await axios.get(process.env.NEXT_PUBLIC_DOMAIN +
-        //     '/get_user?type=email&information=' + registrationData.email);
-
-        // if (userByUsername.length === 0 && userByEmail.length === 0) {
-        //     setLoading(false);
-
-        //     return true;
-        // } else {
-        //     if (userByUsername.length !== 0) {
-        //         checkRegistration.errUsername = true;
-        //         { ToastError(setLocale(locale).username_taken); }
-        //     }
-
-        //     if (userByEmail.length !== 0) {
-        //         checkRegistration.errEmail = true;
-        //         { ToastError(setLocale(locale).email_taken); }
-        //     }
-
-        //     setLoading(false);
-
-        //     return false;
-        // }
-
-        setTimeout(() => {
+            ToastError(setLocale(router.locale).username_taken);
             setLoading(false);
-            { ToastSuccess(setLocale(locale).cool); }
-        }, 2000);
+
+            return false;
+        }
+
+        ToastSuccess(setLocale(router.locale).cool + '!');
+        setLoading(false);
+
+        localStorage.setItem('logged_in', registrationData.username);
+        router.push('/home');
 
         return true;
     } else {
-        if (!EMAIL_REGEXP.test(registrationData.email)) {
-            checkRegistration.errEmail = true;
-            { ToastError(setLocale(locale).error_email); }
-        }
-        if (registrationData.password.length < 8 || registrationData.password.length > 32) {
-            checkRegistration.errPassword = true;
-            { ToastError(setLocale(locale).error_password); }
-        }
-        if (registrationData.password !== registrationData.confirmPassword) {
-            checkRegistration.errConfirmPassword = true;
-            { ToastError(setLocale(locale).error_confirm); }
-        }
         if (!registrationData.username || registrationData.username && registrationData.username?.length < 3) {
             checkRegistration.errUsername = true;
-            { ToastError(setLocale(locale).error_username); }
+            { ToastError(setLocale(router.locale).error_username); }
+        }
+
+        if (registrationData.password.length < 8 || registrationData.password.length > 32) {
+            checkRegistration.errPassword = true;
+            { ToastError(setLocale(router.locale).error_password); }
+        }
+
+        if (registrationData.password !== registrationData.confirmPassword) {
+            checkRegistration.errConfirmPassword = true;
+            { ToastError(setLocale(router.locale).error_confirm); }
         }
 
         setLoading(false);

@@ -6,12 +6,13 @@ from schemas.user import UserLogin, UserResponse
 user_router = APIRouter(prefix='/api/users')
 
 
-@user_router.get('/{login}', status_code=200, response_model=UserResponse)
+@user_router.get('/{login}', status_code=200)
 async def get_user(login: Annotated[str, Path()]):
     user = await User.get(login)
     if not user:
         raise HTTPException(status_code=404, detail='User with login not found')
-    return user
+    data = await user.response()
+    return data
 
 
 @user_router.post('', status_code=201)
@@ -31,6 +32,8 @@ async def create_user(login: Annotated[str, Body()], password: Annotated[str, Bo
 
 @user_router.put('/{login}', status_code=200)
 async def update_user(login: Annotated[str, Path()], parameters: Annotated[dict, Body()]):
+    if 'login' in parameters:
+        raise HTTPException(status_code=400, detail='Field login is immutable')
     user = await User.get(login=login)
     if not user:
         raise HTTPException(status_code=404, detail='User with login not found')
@@ -51,5 +54,5 @@ async def delete_user(login: Annotated[str, Path()]):
 async def login_user(login: Annotated[str, Body()], password: Annotated[str, Body()]):
     user = await User.login(login, password)
     if not user:
-        raise HTTPException(status_code=404, detail='Incorrect login or password')
+        raise HTTPException(status_code=401, detail='Incorrect login or password')
     return 'Success login'

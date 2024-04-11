@@ -14,7 +14,6 @@ class User:
     def __init__(self, login: str, parameters: dict = None):
         self._id = login
         self.password = parameters['password']
-        self.login = login
 
         if parameters:
             for key in parameters:
@@ -38,13 +37,19 @@ class User:
         await self.users.insert_one(self.__dict__)
         print()
 
-    async def update(self, parameters):
+    async def update(self, parameters: dict):
+
         self.__dict__.update(parameters)
-        await self.users.update_one({'_id': self._id}, {'$set': self.__dict__})
+
+        await self.users.update_one({'_id': old_id}, {'$set': self.__dict__})
 
     async def delete(self):
-        _id = self._id
-        self.users.delete_one({'_id': self._id})
+        await self.users.delete_one({'_id': self._id})
+
+    async def response(self):
+        data = self.__dict__
+        data.pop('password')
+        return data
 
     @classmethod
     async def login(cls, login: str, password: str):

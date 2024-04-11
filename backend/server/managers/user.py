@@ -38,10 +38,9 @@ class User:
         print()
 
     async def update(self, parameters: dict):
-
         self.__dict__.update(parameters)
 
-        await self.users.update_one({'_id': old_id}, {'$set': self.__dict__})
+        await self.users.update_one({'_id': self._id}, {'$set': self.__dict__})
 
     async def delete(self):
         await self.users.delete_one({'_id': self._id})

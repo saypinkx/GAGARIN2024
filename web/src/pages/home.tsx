@@ -24,10 +24,10 @@ function Home(): JSX.Element {
     return (
       <>
           <Head>
-              <title>{setLocale(router.locale).gagarin_hack + ' - ' + user.username}</title>
-              <meta name='description' content={setLocale(router.locale).gagarin_hack + ' - ' + user.username} />
-              <meta property='og:title' content={setLocale(router.locale).gagarin_hack + ' - ' + user.username} />
-              <meta property='og:description' content={setLocale(router.locale).gagarin_hack + ' - ' + user.username} />
+              <title>{setLocale(router.locale).gagarin_hack + ' - ' + user._id}</title>
+              <meta name='description' content={setLocale(router.locale).gagarin_hack + ' - ' + user._id} />
+              <meta property='og:title' content={setLocale(router.locale).gagarin_hack + ' - ' + user._id} />
+              <meta property='og:description' content={setLocale(router.locale).gagarin_hack + ' - ' + user._id} />
               <meta charSet="utf-8" />
           </Head>
           <HomePage />

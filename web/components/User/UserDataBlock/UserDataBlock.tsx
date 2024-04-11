@@ -25,11 +25,11 @@ export const UserDataBlock = (): JSX.Element => {
     return (
         <div className={styles.userDataBlock}>
             <Htag tag="m">
-                {user.username}
+                {user._id}
             </Htag>
             <AuthButton loading={loading1} text={setLocale(router.locale).delete_account}
                 onClick={() => {
-                    deleteUser(user.username);
+                    deleteUser(user._id);
                     ToastError(setLocale(router.locale).account_deleted);
                     setLoading1(true);
                     localStorage.clear();
@@ -41,7 +41,7 @@ export const UserDataBlock = (): JSX.Element => {
                     setLoading2(true);
                     localStorage.clear();
 
-                    router.reload();
+                    router.push('/');
                 }} />
         </div>
     );

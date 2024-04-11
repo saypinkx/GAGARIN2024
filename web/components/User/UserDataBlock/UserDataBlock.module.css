@@ -1,0 +1,37 @@
+.userDataBlock {
+	display: grid;
+
+	width: 90%;
+	max-width: 300px;
+	height: fit-content;
+	margin-bottom: 60px;
+	padding: 40px;
+
+	border-radius: 10px;
+	background: var(--white);
+	gap: 12px;
+	justify-items: center;
+	filter: drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08));
+}
+
+@media (max-width: 580px) {
+	.userDataBlock {
+		padding: 30px;
+	}
+}
+
+@media (max-width: 400px) {
+	.userDataBlock {
+		padding: 10px;
+	}
+
+	.arrowBack {
+		margin: 10px 0 0 10px;
+	}
+}
+
+@media (max-width: 300px) {
+	.userDataBlock {
+		padding: 10px 5px;
+	}
+}

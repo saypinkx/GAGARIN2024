@@ -1,13 +1,11 @@
 import { setLocale } from "./locale.helper";
-import axios, { AxiosResponse } from 'axios';
-import { hashPassword } from "./hash.helper";
-import { AuthDataInterface, CheckAuthInterface } from "../interfaces/check_auth_interface";
+import { AuthDataInterface, AuthFormType, CheckAuthInterface } from "../interfaces/check_auth_interface";
 import { ToastError, ToastSuccess } from "../components/Common/Toast/Toast";
-import { loginUser, registerUser } from "./auth.helper";
+import { forgotUser, loginUser, registerUser } from "./auth.helper";
 
 
 export async function checkAuth(data: AuthDataInterface, router: any, setError: (e: any) => void,
-    type: 'login' | 'registration', setLoading: (e: any) => void) {
+    type: AuthFormType, setLoading: (e: any) => void, setType: (e: any) => void) {
     let isOk: boolean = false;
     setLoading(true);
 
@@ -15,6 +13,8 @@ export async function checkAuth(data: AuthDataInterface, router: any, setError: 
         isOk = await checkLogin(data, router, setError, setLoading);
     } else if (type === 'registration') {
         isOk = await checkRegistration(data, router, setError, setLoading);
+    } else {
+        isOk = await checkForgot(data, router, setError, setLoading, setType);
     }
 }
 
@@ -42,7 +42,7 @@ export async function checkLogin(loginData: AuthDataInterface, router: any,
             ToastSuccess(setLocale(router.locale).cool + '!');
             setLoading(false);
             
-            localStorage.setItem('logged_in', loginData.username);
+            localStorage.setItem('_id', loginData.username);
             router.push('/home');
     
             return true;
@@ -88,7 +88,7 @@ export async function checkRegistration(registrationData: AuthDataInterface, rou
         ToastSuccess(setLocale(router.locale).cool + '!');
         setLoading(false);
 
-        localStorage.setItem('logged_in', registrationData.username);
+        localStorage.setItem('_id', registrationData.username);
         router.push('/home');
 
         return true;
@@ -105,6 +105,55 @@ export async function checkRegistration(registrationData: AuthDataInterface, rou
 
         if (registrationData.password !== registrationData.confirmPassword) {
             checkRegistration.errConfirmPassword = true;
+            { ToastError(setLocale(router.locale).error_confirm); }
+        }
+
+        setLoading(false);
+        
+        return false;
+    }
+}
+
+export async function checkForgot(forgotData: AuthDataInterface, router: any,
+    setError: (e: any) => void, setLoading: (e: any) => void, setType: (e: any) => void): Promise<boolean> {
+    const checkForgot: CheckAuthInterface = {
+        errUsername: false,
+        errPassword: false,
+        errConfirmPassword: false,
+    };
+
+    setError(checkForgot);
+
+    if (forgotData.password.length >= 8 && forgotData.password.length <= 32
+        && forgotData.password === forgotData.confirmPassword
+        && forgotData.username?.length && forgotData.username?.length >= 3) {
+        if (!await forgotUser(forgotData)) {
+            checkForgot.errUsername = true;
+
+            ToastError(setLocale(router.locale).incorrect_data);
+            setLoading(false);
+
+            return false;
+        }
+
+        ToastSuccess(setLocale(router.locale).password_changed);
+        setLoading(false);
+        setType('login');
+
+        return true;
+    } else {
+        if (!forgotData.username || forgotData.username && forgotData.username?.length < 3) {
+            checkForgot.errUsername = true;
+            { ToastError(setLocale(router.locale).error_username); }
+        }
+
+        if (forgotData.password.length < 8 || forgotData.password.length > 32) {
+            checkForgot.errPassword = true;
+            { ToastError(setLocale(router.locale).error_password); }
+        }
+
+        if (forgotData.password !== forgotData.confirmPassword) {
+            checkForgot.errConfirmPassword = true;
             { ToastError(setLocale(router.locale).error_confirm); }
         }
 

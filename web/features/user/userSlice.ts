@@ -3,7 +3,7 @@ import { User } from '../../interfaces/user.interface';
 
 
 const userData: User = {
-    username: '',
+  _id: '',
 };
 
 export const userSlice = createSlice({

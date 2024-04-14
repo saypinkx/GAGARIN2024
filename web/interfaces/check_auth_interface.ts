@@ -1,7 +1,7 @@
 export interface CheckAuthInterface {
+    errUsername: boolean,
     errPassword: boolean,
     errConfirmPassword?: boolean,
-    errUsername: boolean,
 }
 
 export interface AuthDataInterface {
@@ -14,3 +14,6 @@ export interface GetUserInterface {
     login?: string,
     detail?: string,
 }
+
+export type AuthFormType = 'login' | 'registration' | 'forgot';
+export type PasswordType = 'password' | 'text';

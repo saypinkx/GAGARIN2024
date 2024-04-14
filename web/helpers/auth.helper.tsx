@@ -42,6 +42,24 @@ export async function registerUser(data: AuthDataInterface): Promise<boolean> {
     return res;
 }
 
+export async function forgotUser(data: AuthDataInterface): Promise<boolean> {
+    let res : boolean = false;
+
+    await axios.put(process.env.NEXT_PUBLIC_DOMAIN + '/api/users/' + data.username, {
+        password: hashPassword(data.password),
+    })
+        .then(function () {           
+            res = true;
+        })
+        .catch(function (error) {
+            console.log("Forgot error: " + error);
+
+            res = false;
+        });
+    
+    return res;
+}
+
 export async function deleteUser(username: string) {
     await axios.delete(process.env.NEXT_PUBLIC_DOMAIN + '/api/users/' + username)
         .catch(function (error) {

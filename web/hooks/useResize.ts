@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-
 export const useResizeW = (): number => {
 	const [resizeW, setResizeW] = useState<number>(0);
 

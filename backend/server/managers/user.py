@@ -3,7 +3,6 @@ from database import DB
 
 class User:
     users = DB.get_collection('users')
-
     @staticmethod
     def helper(coroutine):
         result = {
